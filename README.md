@@ -1,263 +1,116 @@
-⸻
+<div align="center">
+  <h1>🛡️ FinOps Guardian</h1>
+  <p><strong>Autonomous Cloud Cost Intelligence & Remediation Engine</strong></p>
+  <sub>Replace reactive observability with predictive, explainable, and autonomous cloud financial intelligence.</sub>
+</div>
 
+---
 
-🛡️ FinOps Guardian AI
+## ⚡ Beyond Dashboards: A Decision Engine
 
-AI-Powered Multi-Cloud Cost Intelligence Platform
+Modern cloud environments suffer from uncontrolled resource sprawl, delayed detection of billing anomalies, and weak forecasting. Traditional observability platforms tell you *what* happened days after the invoice is cut.
 
-⸻
+**FinOps Guardian** is a proactive decision intelligence system. Operating across multi-cloud environments, it abstracts raw billing data through a highly tuned 3-Layer AI ensemble to detect anomalies instantly, uses LLM-driven attribution to explain *why* they happened, and leverages LightGBM/Prophet to forecast trajectory before the budget breaks.
 
-🚀 Overview
+---
 
-FinOps Guardian AI is a production-grade, AI-driven platform designed to detect cloud cost anomalies and forecast future spend across multi-cloud environments (AWS, Azure, GCP).
+## 🧬 Core Intelligence Capabilities
 
-It transforms raw billing data into actionable financial intelligence, enabling organizations to:
-	•	Detect anomalies in real-time
-	•	Identify root causes of cost spikes
-	•	Forecast future cloud spend with confidence
-	•	Predict budget breaches before they happen
+### 1. ⚙️ Multi-Cloud Unification Taxonomy
+Ingests and normalizes unstructured billing data from **AWS, Azure, and GCP** into a standardized telemetry format. Expenditures are categorized into `Compute`, `Storage`, `Networking`, and `Managed Services` to allow seamless cross-provider correlation.
 
-⸻
+### 2. 🧠 3-Layer Ensemble Anomaly Detection 
+Instead of relying on rigid thresholds, Guardian utilizes a highly optimized voting ensemble to neutralize false positives while detecting complex structural drift.
 
-🎯 Problem Statement
+| Layer | Architecture | Objective |
+|-------|-------------|-----------|
+| **Statistical** | `Z-Score` | Baseline variance & abrupt spike detection. |
+| **Machine Learning** | `Isolation Forest` | Multidimensional pattern shifts against normal usage. |
+| **Deep Learning** | `LSTM Autoencoder` | Chronological and temporal behavior embeddings. |
 
-Cloud costs are growing 20–30% YoY, but:
-	•	Existing dashboards are retrospective
-	•	Teams lack predictive visibility
-	•	Subtle anomalies (cost creep, correlated spikes) go unnoticed
-	•	Root cause attribution is missing
+*Final trigger requires a majority vote (≥ 2 models consensus).*
 
-👉 Result: Unexpected cloud bill shocks
+### 3. 🎯 Advanced Risk & Priority Engine
+Financial anomalies are explicitly calculated against relative monetary impact, preventing engineering teams from wasting time on low-cost noise. 
 
-⸻
+```text
+severity_score = model_votes / 3
+impact_score   = severity_score × cost_usd
+```
 
-💡 Our Solution
+| Priority | Impact Trigger | Routing Action |
+|----------|----------------|----------------|
+| **P0 - Critical** | Impact > $3,000 | Immediate intervention required. |
+| **P1 - High**     | Impact > $1,500 | High urgency review pipeline. |
+| **P2 - Medium**   | Impact > $500   | Monitor trend closely. |
+| **P3 - Low**      | Impact < $500   | Informational logging. |
 
-FinOps Guardian AI introduces:
-	•	Multi-layer anomaly detection
-	•	Explainable AI (SHAP-based root cause analysis)
-	•	Multi-horizon forecasting (7/30/90 days)
-	•	Budget breach prediction engine
+### 4. 💬 LLM-Driven Root Cause Attribution
+Raw anomalies are sterile. FinOps Guardian enriches every anomalous event natively with actionable context:
+- 📌 **Root Cause:** Identifies the architectural source.
+- 🧾 **Insight Reasoning:** Explains the deviation logically.
+- 🛠️ **Recommended Action:** Exactly what to terminate, resize, or audit.
+- 💰 **Estimated Savings:** Hard dollar projections for remediation.
 
-⸻
+> *Example: "Unexpected data transfer spike → Misconfigured external routing → Audit CDN usage & redirect VPC → Expected Savings $1000+"*
 
-🧠 Core Architecture
+### 5. 📈 Multi-Horizon Forecasting Engine
+Predicts future spend distributions across **7, 30, and 90-day** horizons.
+Guardian utilizes **Prophet** for seasonal time-series extrapolation and **LightGBM** to evaluate feature-driven dependencies, generating robust **P10, P50, and P90** confidence intervals. 
 
-Raw Data (CSV / Multi-Cloud)
-        ↓
-Normalization Layer
-        ↓
-Feature Engineering (Time-Series)
-        ↓
-ML + DL Pipeline
-        ↓
-Anomaly Detection + Forecasting
-        ↓
-PostgreSQL (Neon DB)
-        ↓
-Streamlit Dashboard
+### 6. 🚨 Predictive Budget Breach Routing
+Constantly maps the 90-day probability distributions against active thresholds. By calculating the likelihood of spending > budget, it isolates overspends and issues preemptive triggers *before* the infrastructure burns cash.
 
+---
 
-⸻
+## 🏗️ System Architecture
 
-⚙️ Tech Stack
+FinOps Guardian abstracts heavy ML processing completely away from the frontend layer to guarantee instant performance.
 
-🔹 Machine Learning
-	•	Scikit-learn (Isolation Forest)
-	•	Statistical Models (Z-score + Seasonal Decomposition)
-	•	PyTorch (LSTM Autoencoder)
-	•	SHAP (Explainability)
+```text
+[ Raw Billing Data ] → [ Data Engineering Pivot ] → [ ML Training & Inference Pipeline ]
+                                                                ↓
+[ Streamlit Read-Only UI ] ← [ Neon PostgreSQL DB (Source of Truth) ]
+```
 
-🔹 Forecasting
-	•	Facebook Prophet
-	•	LightGBM (Gradient Boosting)
+### The Data Model
+**Anomalies Schema**
+`date` | `service_category` | `provider` | `team` | `cost_usd` | `is_anomaly` | `severity_label` | `severity_score` | `impact_score` | `priority` | `root_cause` | `llm_insight` | `recommended_action` | `estimated_savings` | `model_votes` 
 
-🔹 Backend & Data
-	•	Python (Pandas, NumPy)
-	•	PostgreSQL (Neon DB)
-	•	psycopg2
+**Forecasts Schema**
+`date` | `service_category` | `forecast_10` | `forecast_50` | `forecast_90` | `horizon_days`
 
-🔹 Frontend
-	•	Streamlit
-	•	Plotly (Dark Theme Visualizations)
+---
 
-⸻
+## ⚙️ Getting Started
 
-📊 Key Features
+**1. Run the Intelligence Pipeline (Background Computations)**
+*This loads the synthetic billing data, executes all ML/DL models via Optuna tuning, and syncs conclusions safely onto PostgreSQL.*
+```bash
+python ml/run_pipeline_once.py
+```
 
-🔍 1. Multi-Layer Anomaly Detection
-	•	Statistical detection (Z-score)
-	•	ML detection (Isolation Forest)
-	•	Deep Learning detection (LSTM Autoencoder)
-	•	Ensemble voting system
-
-⸻
-
-🧠 2. Root Cause Attribution
-	•	SHAP-based explainability
-	•	Human-readable explanations
-	•	Ranked contributing factors
-
-⸻
-
-📈 3. Multi-Horizon Forecasting
-	•	7-day, 30-day, 90-day predictions
-	•	Confidence intervals (10th, 50th, 90th percentile)
-	•	Ensemble forecasting (Prophet + LightGBM)
-
-⸻
-
-🚨 4. Budget Breach Prediction
-	•	Probability of exceeding budget
-	•	Estimated breach date
-	•	Risk classification (Low / Medium / High)
-
-⸻
-
-🔗 5. Cross-Service Correlation Detection
-	•	Detects simultaneous spikes across services
-	•	Identifies systemic cost issues
-
-⸻
-
-📦 Dataset
-	•	Generated 8640 rows of multi-cloud billing data
-	•	Includes:
-	•	Seasonal patterns
-	•	Cost drift
-	•	Sudden spikes
-	•	Ground truth anomaly labels
-
-⸻
-
-🧪 Model Performance
-
-Metric	Target
-F1 Score (Anomaly Detection)	> 0.85
-Forecast Accuracy (MAPE)	< 15%
-Detection Latency	Near real-time
-
-
-⸻
-
-🗂️ Project Structure
-
-finops-guardian/
-│
-├── data/
-│   ├── synthetic/
-│   └── processed/
-│
-├── ml/
-│   ├── anomaly/
-│   ├── forecasting/
-│   ├── attribution/
-│   ├── features.py
-│   ├── normalize.py
-│
-├── db/
-│   └── database.py
-│
-├── dashboard/
-│   └── app.py
-│
-└── README.md
-
-
-⸻
-
-⚡ Setup Instructions
-
-1️⃣ Clone Repository
-
-git clone https://github.com/your-username/finops-guardian.git
-cd finops-guardian
-
-
-⸻
-
-2️⃣ Create Virtual Environment
-
-python -m venv venv
-source venv/bin/activate   # Mac/Linux
-
-
-⸻
-
-3️⃣ Install Dependencies
-
-pip install -r requirements.txt
-
-
-⸻
-
-4️⃣ Generate Data
-
-python data/synthetic/generate_large_scale.py
-
-
-⸻
-
-5️⃣ Run ML Pipeline
-
-python ml/pipeline.py
-
-
-⸻
-
-6️⃣ Launch Dashboard
-
+**2. Launch the Decision Executive Interface**
+*Instantly pull from the database cache into the Streamlit ecosystem.*
+```bash
 streamlit run dashboard/app.py
+```
 
+---
 
-⸻
+## 🧠 Design Philosophy
 
-📸 Dashboard Highlights
-	•	Real-time anomaly visualization
-	•	Forecast trajectory with confidence bands
-	•	Root cause explanations
-	•	Budget breach alerts
+1. **Ensemble > Single Model:** Combining methodologies prevents adversarial system noise from disrupting alerts.
+2. **Explainability > Black Box:** AI has no value without attribution. We enforce SHAP and Linguistic derivations.
+3. **Prediction > Reaction:** You shouldn't manage costs; you should steer forecasts.
+4. **Impact > Noise:** We mute tiny fractional anomalies if the dollar-value impact is trivial, saving engineer fatigue.
 
-⸻
+---
 
-🧠 Innovation Highlights
-	•	Hybrid ML + Deep Learning anomaly detection
-	•	Explainable AI integration (SHAP)
-	•	Multi-cloud unified cost taxonomy
-	•	Ensemble forecasting with uncertainty modeling
-
-⸻
-
-🎯 Use Cases
-	•	Cloud cost optimization teams
-	•	FinOps engineers
-	•	DevOps & SRE teams
-	•	Enterprise finance departments
-
-⸻
-
-🚀 Future Enhancements
-	•	Real-time streaming ingestion (Kafka)
-	•	Auto-remediation suggestions
-	•	Integration with AWS/Azure APIs
-	•	Role-based dashboards
-
-⸻
-
-👨‍💻 Team Catalyst Core
-
-Built for Tic Tech Toe Hackathon
-Domain: FinOps & Cloud Cost Intelligence
-
-⸻
-
-🏁 Final Note
-
-FinOps Guardian AI is not just a dashboard —
-it is a predictive financial defense system for cloud infrastructure.
-
-⸻
-
-
-
-⸻
+<p align="center">
+  <em>Cloud cost is not a monitoring problem. It is a decision problem. FinOps Guardian turns raw data into automated decisions.</em>
+</p>
+<p align="center">
+  <b>Architected by Ayush Mali</b><br>
+  <sub>Building intelligent, performant systems for high-scale enterprise operations.</sub>
+</p>
