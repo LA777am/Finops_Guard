@@ -111,6 +111,5 @@ streamlit run dashboard/app.py
   <em>Cloud cost is not a monitoring problem. It is a decision problem. FinOps Guardian turns raw data into automated decisions.</em>
 </p>
 <p align="center">
-  <b>Architected by Ayush Mali</b><br>
   <sub>Building intelligent, performant systems for high-scale enterprise operations.</sub>
 </p>
