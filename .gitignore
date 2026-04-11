@@ -1,0 +1,15 @@
+cat << 'EOF' > .gitignore
+
+venv/
+__pycache__/
+*.pyc
+data/processed/*.csv
+data/raw/*.csv
+data/synthetic/*.csv
+*.db
+*.sqlite3
+ml/saved_models/*.pth
+ml/saved_models/*.pkl
+.DS_Store
+EOF
+.env

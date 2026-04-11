@@ -1,0 +1,51 @@
+{
+    "hyperparameters": {
+        "isolation_forest": {
+            "n_estimators": 237,
+            "max_samples": 0.842465034982447,
+            "contamination": 0.0910778841624199,
+            "max_features": 0.738651023618774
+        },
+        "ocsvm": {
+            "nu": 0.17686830436057216,
+            "gamma": "scale"
+        },
+        "lstm": {
+            "hidden_dim": 64,
+            "num_layers": 1,
+            "lr": 0.0049783258505662845,
+            "epochs": 25
+        },
+        "lgbm": {
+            "num_leaves": 19,
+            "learning_rate": 0.05540259535153958,
+            "n_estimators": 261,
+            "subsample": 0.7955045510544357,
+            "colsample_bytree": 0.918027787335252
+        },
+        "prophet": {
+            "changepoint_prior_scale": 0.3948902565782424,
+            "seasonality_prior_scale": 4.847908081438738
+        }
+    },
+    "ensemble": {
+        "weights": {
+            "w_z": 0.3949527497330092,
+            "w_if": 0.15897672809013788,
+            "w_svm": 0.36884321876409265,
+            "w_lstm": 0.0772273034127603
+        },
+        "threshold": 0.0,
+        "severity_quantiles": {
+            "q50": 0.2811677129663913,
+            "q80": 0.49166348125577863
+        }
+    },
+    "metrics": {
+        "f1": 0.0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "roc_auc": 0.0,
+        "false_positive_rate": 1.0
+    }
+}

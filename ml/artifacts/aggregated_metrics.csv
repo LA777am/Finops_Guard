@@ -1,0 +1,17 @@
+,f1,precision,recall,roc_auc,false_positive_rate
+compute_data,0.0,0.0,0.0,0.0,1.0
+compute_devops,0.0,0.0,0.0,0.0,1.0
+compute_engineering,0.0,0.0,0.0,0.0,1.0
+compute_product,0.0,0.0,0.0,0.0,1.0
+managed_services_data,0.0,0.0,0.0,0.0,1.0
+managed_services_devops,0.0,0.0,0.0,0.0,1.0
+managed_services_engineering,0.0,0.0,0.0,0.0,1.0
+managed_services_product,0.0,0.0,0.0,0.0,1.0
+networking_data,0.0,0.0,0.0,0.0,1.0
+networking_devops,0.0,0.0,0.0,0.0,1.0
+networking_engineering,0.0,0.0,0.0,0.0,1.0
+networking_product,0.0,0.0,0.0,0.0,1.0
+storage_data,0.0,0.0,0.0,0.0,1.0
+storage_devops,0.0,0.0,0.0,0.0,1.0
+storage_engineering,0.0,0.0,0.0,0.0,1.0
+storage_product,0.0,0.0,0.0,0.0,1.0
