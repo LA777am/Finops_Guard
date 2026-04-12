@@ -4,7 +4,7 @@
 
 import os
 import sys
-import pandas as pd
+import pandas as pd 
 import numpy as np
 import plotly.graph_objects as go
 import streamlit as st
@@ -19,6 +19,7 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="expanded"
 )
+
 
 # ─── GLOBAL CSS ─────────────────────────────────────────────────────────────────
 st.markdown("""
@@ -43,17 +44,22 @@ html, body, [data-testid="stAppViewContainer"],
 }
 
 /* ── Hide Streamlit chrome ── */
-#MainMenu, footer, header,
+#MainMenu, footer,
 [data-testid="stToolbar"],
 [data-testid="stDecoration"] { display: none !important; }
 
 /* ── Sidebar ── */
-[data-testid="stSidebar"] {
-    background: rgba(8,10,22,0.97) !important;
-    border-right: 1px solid rgba(255,255,255,0.05) !important;
-}
-[data-testid="stSidebar"] * { color: #c0cce0 !important; }
+/* ── SIDEBAR FIXED + VISIBLE ── */
 
+/* ── Hide ONLY header (fix overlay issue) ── */
+header[data-testid="stHeader"] {
+    display: none !important;
+}
+
+/* Optional: remove top padding gap created by header */
+[data-testid="stAppViewContainer"] {
+    padding-top: 0rem !important;
+}
 /* ── Block container ── */
 .block-container {
     padding: 2.5rem 3rem 3rem !important;
@@ -285,6 +291,37 @@ hr { border-color: rgba(255,255,255,0.05) !important; margin: 1.5rem 0 !importan
 .metric-block .mb-sub   { font-size: 11px; color: #3a5aaa; margin-top: 4px; }
 </style>
 """, unsafe_allow_html=True)
+# ─── DATA LAYER ──────────────────────────────────────────────────────────────────
+@st.cache_data(ttl=300, show_spinner=False)
+def load_data():
+    db_url = os.getenv("DATABASE_URL")
+    if not db_url:
+        st.error("DATABASE_URL environment variable is not set.")
+        st.stop()
+    db = FinOpsDatabase(db_url)
+    try:
+        anomalies_df = db.fetch_anomalies(limit=10000)
+        forecasts_df = db.fetch_forecasts(limit=5000)
+        anomalies_df['date'] = pd.to_datetime(anomalies_df['date'])
+        if not forecasts_df.empty:
+            forecasts_df['date'] = pd.to_datetime(forecasts_df['date'])
+        return anomalies_df, forecasts_df
+    except Exception as e:
+        st.error(f"Database connection failed: {e}")
+        st.stop()
+
+
+@st.cache_data(ttl=300, show_spinner=False)
+def load_metrics():
+    db_url = os.getenv("DATABASE_URL")
+    if not db_url:
+        return pd.DataFrame()
+    db = FinOpsDatabase(db_url)
+    try:
+        return db.fetch_metrics()
+    except Exception:
+        return pd.DataFrame()
+
 
 
 # ─── PLOTLY THEME ────────────────────────────────────────────────────────────────
@@ -319,36 +356,6 @@ PLOTLY_BASE = dict(
 )
 
 
-# ─── DATA LAYER ──────────────────────────────────────────────────────────────────
-@st.cache_data(ttl=300, show_spinner=False)
-def load_data():
-    db_url = os.getenv("DATABASE_URL")
-    if not db_url:
-        st.error("DATABASE_URL environment variable is not set.")
-        st.stop()
-    db = FinOpsDatabase(db_url)
-    try:
-        anomalies_df = db.fetch_anomalies(limit=10000)
-        forecasts_df = db.fetch_forecasts(limit=5000)
-        anomalies_df['date'] = pd.to_datetime(anomalies_df['date'])
-        if not forecasts_df.empty:
-            forecasts_df['date'] = pd.to_datetime(forecasts_df['date'])
-        return anomalies_df, forecasts_df
-    except Exception as e:
-        st.error(f"Database connection failed: {e}")
-        st.stop()
-
-
-@st.cache_data(ttl=300, show_spinner=False)
-def load_metrics():
-    db_url = os.getenv("DATABASE_URL")
-    if not db_url:
-        return pd.DataFrame()
-    db = FinOpsDatabase(db_url)
-    try:
-        return db.fetch_metrics()
-    except Exception:
-        return pd.DataFrame()
 
 
 # ─── CHART BUILDERS ──────────────────────────────────────────────────────────────
@@ -618,43 +625,107 @@ def create_forecast_chart(hist_df, forecast_df, budget_threshold):
         title=dict(text='90-Day Spend Forecast with Confidence Interval', font=dict(size=13, color='#7080a0')),
     )
     return fig
+# ─── HEADER ──────────────────────────────────────────────────────────────────────
+col_title, col_ts = st.columns([5, 2])
 
+with col_title:
+    st.markdown('<div class="fg-hero">FinOps Guardian</div>', unsafe_allow_html=True)
+    st.markdown('<div class="fg-sub">AI-Powered Multi-Cloud Cost Anomaly Detection &amp; Spend Forecasting &nbsp;|&nbsp; Team Catalyst Core</div>', unsafe_allow_html=True)
 
-# ─── SIDEBAR ─────────────────────────────────────────────────────────────────────
+with col_ts:
+    st.markdown(f'<div class="fg-mono" style="text-align:right;padding-top:8px">Last updated<br>{pd.Timestamp.now().strftime("%Y-%m-%d %H:%M")} UTC</div>', unsafe_allow_html=True)
+
+st.markdown("<br>", unsafe_allow_html=True)
+with st.spinner("Loading FinOps Intelligence..."):
+    anomalies_df, forecasts_df = load_data()
+    metrics_df = load_metrics()
+if anomalies_df is None or anomalies_df.empty:
+    st.error("No data loaded from database.")
+    st.stop()   
+# ─── CUSTOM SIDEBAR ─────────────────────────────────────────────
 with st.sidebar:
-    st.markdown('<div class="fg-section" style="margin-bottom:1.5rem">Configuration</div>', unsafe_allow_html=True)
 
-    with st.spinner("Loading data..."):
-        anomalies_df, forecasts_df = load_data()
-        metrics_df = load_metrics()
+    st.markdown("### ⚙️ Control Panel")
 
-    # Filters
-    all_providers = sorted(anomalies_df['provider'].dropna().unique().tolist())
-    all_services = sorted(anomalies_df['service_category'].dropna().unique().tolist())
+    # ── DATA PREP ──
+    all_providers = sorted(anomalies_df['provider'].dropna().unique().tolist()) if 'provider' in anomalies_df.columns else []
+    all_services = sorted(anomalies_df['service_category'].dropna().unique().tolist()) if 'service_category' in anomalies_df.columns else []
 
-    selected_providers = st.multiselect("Cloud Provider", all_providers, default=all_providers)
-    selected_service = st.selectbox("Service Category", all_services)
+    # ── FILTERS ──
+    st.markdown("#### Filters")
 
-    date_min = anomalies_df['date'].min().date()
-    date_max = anomalies_df['date'].max().date()
-    date_range = st.date_input("Date Range", value=(date_min, date_max), min_value=date_min, max_value=date_max)
+    selected_providers = st.multiselect(
+        "Cloud Provider",
+        options=all_providers,
+        default=all_providers
+    )
 
-    budget_threshold = st.number_input("Monthly Budget ($)", value=50000, step=1000, min_value=1000)
-    alert_threshold = st.slider("Alert Severity Threshold", 0, 100, 60)
+    selected_service = st.selectbox(
+        "Service Category",
+        options=all_services if all_services else ["No Data"]
+    )
+
+    if not anomalies_df.empty:
+        date_min = anomalies_df['date'].min().date()
+        date_max = anomalies_df['date'].max().date()
+
+        date_range = st.date_input(
+            "Date Range",
+            value=(date_min, date_max),
+            min_value=date_min,
+            max_value=date_max
+        )
+    else:
+        date_range = None
 
     st.markdown("---")
-    st.markdown('<div class="fg-mono" style="margin-bottom:10px">Provider Status</div>', unsafe_allow_html=True)
-    for p in all_providers:
-        st.markdown(f'<span class="status-dot dot-green"></span><span style="font-size:12px;color:#8090b0">{p} Connected</span>', unsafe_allow_html=True)
-        st.write("")
+
+    # ── FINOPS CONTROLS ──
+    st.markdown("#### Budget Controls")
+
+    budget_threshold = st.number_input(
+        "Monthly Budget ($)",
+        value=50000,
+        step=1000
+    )
+
+    alert_threshold = st.slider(
+        "Alert Threshold",
+        0, 100, 60
+    )
 
     st.markdown("---")
-    st.markdown('<div class="fg-mono" style="margin-bottom:10px">Active ML Models</div>', unsafe_allow_html=True)
-    models = ['Z-Score Detector', 'Isolation Forest', 'LSTM Autoencoder', 'Prophet Forecaster', 'LightGBM Ensemble', 'SHAP Attribution']
+
+    # ── PROVIDER STATUS ──
+    st.markdown("#### Provider Status")
+
+    if all_providers:
+        for p in all_providers:
+            st.markdown(f"🟢 {p}")
+    else:
+        st.caption("No providers found")
+
+    st.markdown("---")
+
+    # ── MODELS ──
+    st.markdown("#### Active Models")
+
+    models = [
+        "Z-Score",
+        "Isolation Forest",
+        "LSTM Autoencoder",
+        "Prophet",
+        "LightGBM",
+        "SHAP"
+    ]
+
     for m in models:
-        st.markdown(f'<span class="status-dot dot-green"></span><span style="font-size:11px;color:#6070a0">{m}</span>', unsafe_allow_html=True)
-        st.write("")
+        st.markdown(f"🧠 {m}")
 
+    st.markdown("---")
+
+    # ── DEBUG (REMOVE LATER) ──
+    st.caption(f"Rows Loaded: {len(anomalies_df)}")
 
 # ─── APPLY FILTERS ───────────────────────────────────────────────────────────────
 filtered_df = anomalies_df.copy()
@@ -662,7 +733,7 @@ filtered_df = anomalies_df.copy()
 if selected_providers:
     filtered_df = filtered_df[filtered_df['provider'].isin(selected_providers)]
 
-if len(date_range) == 2:
+if isinstance(date_range, (list, tuple)) and len(date_range) == 2:
     filtered_df = filtered_df[
         (filtered_df['date'].dt.date >= date_range[0]) &
         (filtered_df['date'].dt.date <= date_range[1])
@@ -674,19 +745,6 @@ anomalies_only = service_df[service_df['is_anomaly'] == True].copy()
 service_forecast_df = pd.DataFrame()
 if not forecasts_df.empty:
     service_forecast_df = forecasts_df[forecasts_df['service_category'] == selected_service].sort_values('date')
-
-
-# ─── HEADER ──────────────────────────────────────────────────────────────────────
-col_title, col_ts = st.columns([5, 2])
-with col_title:
-    st.markdown('<div class="fg-hero">FinOps Guardian</div>', unsafe_allow_html=True)
-    st.markdown('<div class="fg-sub">AI-Powered Multi-Cloud Cost Anomaly Detection &amp; Spend Forecasting &nbsp;|&nbsp; Team Catalyst Core</div>', unsafe_allow_html=True)
-
-with col_ts:
-    st.markdown(f'<div class="fg-mono" style="text-align:right;padding-top:8px">Last updated<br>{pd.Timestamp.now().strftime("%Y-%m-%d %H:%M")} UTC</div>', unsafe_allow_html=True)
-
-st.markdown("<br>", unsafe_allow_html=True)
-
 
 # ─── KPI STRIP ───────────────────────────────────────────────────────────────────
 total_anomalies   = int(filtered_df['is_anomaly'].sum())
@@ -797,27 +855,36 @@ with tab1:
     st.markdown("<br>", unsafe_allow_html=True)
     # ─── MODEL CONTRIBUTION BAR ───
 
-    z_cnt = int(service_df['zscore_flag'].sum()) if 'zscore_flag' in service_df.columns else 0
-    if_cnt = int(service_df['if_flag'].sum()) if 'if_flag' in service_df.columns else 0
-    lstm_cnt = int(service_df['lstm_flag'].sum()) if 'lstm_flag' in service_df.columns else 0
-    final_cnt = int(service_df['is_anomaly'].sum())
 
-    fig_models = go.Figure(go.Bar(
-        x=['Z-Score', 'Isolation Forest', 'LSTM', 'Final'],
-        y=[z_cnt, if_cnt, lstm_cnt, final_cnt],
-        marker=dict(
-            color=['#3a6bff', '#b06fff', '#10b981', '#ff3b5c']
+    # ─── MODEL AGREEMENT DISTRIBUTION (REAL DATA) ───
+    if 'model_votes' in service_df.columns:
+
+        vote_dist = service_df[service_df['is_anomaly'] == True]['model_votes'].value_counts().sort_index()
+
+        fig_models = go.Figure(go.Bar(
+            x=[f"{v} Models" for v in vote_dist.index],
+            y=vote_dist.values,
+            marker=dict(
+                color=['#4a5880' if v == 1 else '#f59e0b' if v == 2 else '#10b981' for v in vote_dist.index]
+            )
+        ))
+
+        fig_models.update_layout(
+            **PLOTLY_BASE,
+            height=220,
+            showlegend=False,
+            title=dict(
+                text='Detection Confidence (Model Agreement)',
+                font=dict(size=13, color='#7080a0')
+            )
         )
-    ))
 
-    fig_models.update_layout(
-        **PLOTLY_BASE,
-        height=220,
-        showlegend=False,
-        title=dict(text='Model Contribution Breakdown', font=dict(size=13, color='#7080a0'))
-    )
+        
 
-    st.plotly_chart(fig_models, use_container_width=True)
+    else:
+        st.caption("No model vote data available")
+
+
     # Main chart 70% | Donut 30%
     chart_col, donut_col = st.columns([7, 3])
 
