@@ -23,7 +23,7 @@ st.set_page_config(
 # ─── GLOBAL CSS ─────────────────────────────────────────────────────────────────
 st.markdown("""
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500&family=Inter:wght@400;500&family=DM+Mono:wght@400;500&display=swap');
 
 /* ── Reset & base ── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -62,36 +62,38 @@ html, body, [data-testid="stAppViewContainer"],
 
 /* ── Typography ── */
 .fg-hero {
-    font-family: 'Syne', sans-serif;
+    font-family: 'Montserrat', sans-serif;
     font-size: clamp(28px, 3.5vw, 46px);
-    font-weight: 800;
+    font-weight: 300;
     letter-spacing: -1.5px;
     line-height: 1.1;
+    color: #eef2ff; 
     background: linear-gradient(120deg, #e8eeff 0%, #7ba4ff 50%, #b06fff 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    margin-bottom: 0.25rem;
+    margin-bottom: 0.3rem;
 }
 .fg-sub {
-    font-family: 'DM Sans', sans-serif;
+    font-family: 'Inter', sans-serif;
     font-size: 13px;
-    color: #5a6480;
+    color: #eef2ff;
     letter-spacing: 0.3px;
-    margin-bottom: 0;
+    margin-bottom: 0.3rem;
+    font-weight: 300; /* THIN */
 }
 .fg-section {
-    font-family: 'Syne', sans-serif;
+    font-family: 'Montserrat', sans-serif;
     font-size: 18px;
-    font-weight: 700;
-    color: #d0d8f0;
-    letter-spacing: -0.3px;
+    font-weight: 400;
+    color: #e2e8ff;
+    letter-spacing: -0.2px;
     margin-bottom: 1rem;
 }
 .fg-mono {
     font-family: 'DM Mono', monospace;
     font-size: 11px;
-    color: #4a5880;
+    color: #6b7aa6;
     letter-spacing: 0.5px;
     text-transform: uppercase;
 }
@@ -104,7 +106,7 @@ html, body, [data-testid="stAppViewContainer"],
     margin-bottom: 2rem;
 }
 .kpi-card {
-    background: rgba(255,255,255,0.025);
+    background: rgba(255,255,255,0.04);
     border: 1px solid rgba(255,255,255,0.06);
     border-radius: 16px;
     padding: 22px 24px 20px;
@@ -112,6 +114,9 @@ html, body, [data-testid="stAppViewContainer"],
     overflow: hidden;
     transition: border-color 0.3s, transform 0.25s;
     backdrop-filter: blur(12px);
+    box-shadow:
+        0 4px 20px rgba(0,0,0,0.6),
+        inset 0 1px 0 rgba(255,255,255,0.05);
 }
 .kpi-card::before {
     content: '';
@@ -124,29 +129,38 @@ html, body, [data-testid="stAppViewContainer"],
 .kpi-card.kpi-red::before   { background: linear-gradient(90deg, #ff3b5c, #ff7a6e); }
 .kpi-card.kpi-amber::before { background: linear-gradient(90deg, #f59e0b, #fcd34d); }
 .kpi-card.kpi-green::before { background: linear-gradient(90deg, #10b981, #6ee7b7); }
-.kpi-card:hover { border-color: rgba(255,255,255,0.12); transform: translateY(-2px); }
+.kpi-card:hover {
+    border-color: rgba(120,140,255,0.25);
+    transform: translateY(-3px) scale(1.01);
 
+    box-shadow:
+        0 6px 24px rgba(0,0,0,0.6),              
+        0 0 12px rgba(90,120,255,0.18),         
+        0 0 24px rgba(90,120,255,0.10),         
+        inset 0 1px 0 rgba(255,255,255,0.05);
+}
 .kpi-label {
     font-size: 11px;
-    color: #4a5880;
+    color: #9fb0d4; 
     text-transform: uppercase;
     letter-spacing: 0.8px;
     margin-bottom: 10px;
-    font-family: 'DM Mono', monospace;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 400;
 }
 .kpi-value {
-    font-family: 'Syne', sans-serif;
+    font-family: 'Montserrat', sans-serif;
     font-size: 32px;
-    font-weight: 800;
-    color: #e8eeff;
+    font-weight: 400;
+    color: #f5f7ff;
     letter-spacing: -1px;
     line-height: 1;
 }
 .kpi-delta {
     margin-top: 8px;
     font-size: 11px;
-    color: #3a5aaa;
-    font-family: 'DM Mono', monospace;
+    font-family: 'Inter', sans-serif;
+    color: #7f8db3;
 }
 
 /* ── Alert cards ── */
@@ -267,7 +281,7 @@ hr { border-color: rgba(255,255,255,0.05) !important; margin: 1.5rem 0 !importan
     text-align: center;
 }
 .metric-block .mb-label { font-size: 11px; color: #4a5880; font-family: 'DM Mono', monospace; text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 6px; }
-.metric-block .mb-value { font-family: 'Syne', sans-serif; font-size: 24px; font-weight: 700; color: #e8eeff; }
+.metric-block .mb-value { font-family: 'Montserrat', sans-serif; font-size: 24px; font-weight: 700; color: #e8eeff; }
 .metric-block .mb-sub   { font-size: 11px; color: #3a5aaa; margin-top: 4px; }
 </style>
 """, unsafe_allow_html=True)
@@ -277,24 +291,30 @@ hr { border-color: rgba(255,255,255,0.05) !important; margin: 1.5rem 0 !importan
 PLOTLY_BASE = dict(
     paper_bgcolor='rgba(0,0,0,0)',
     plot_bgcolor='rgba(0,0,0,0)',
-    font=dict(family='DM Sans', color='#8090b0', size=11),
+    font=dict(family='Inter', color='#9fb0d4', size=11),  # 🔥 global text
+
     hovermode='x unified',
     margin=dict(l=10, r=10, t=36, b=10),
+
     legend=dict(
-        bgcolor='rgba(255,255,255,0.03)',
-        bordercolor='rgba(255,255,255,0.06)',
+        bgcolor='rgba(255,255,255,0.04)',
+        bordercolor='rgba(255,255,255,0.08)',
         borderwidth=1,
-        font=dict(size=11, color='#8090b0')
+        font=dict(size=11, color='#c7d2ff')  # 🔥 brighter legend
     ),
+
     xaxis=dict(
-        gridcolor='rgba(255,255,255,0.04)',
-        zerolinecolor='rgba(255,255,255,0.04)',
-        tickfont=dict(size=10, color='#4a5880')
+        gridcolor='rgba(255,255,255,0.04)',    # slightly visible grid
+        zerolinecolor='rgba(255,255,255,0.05)',
+        tickfont=dict(size=11, color='#b8c6e8'),  # 🔥 FIXED
+        title_font=dict(size=12, color='#dbe4ff')  # if titles exist
     ),
+
     yaxis=dict(
-        gridcolor='rgba(255,255,255,0.04)',
-        zerolinecolor='rgba(255,255,255,0.04)',
-        tickfont=dict(size=10, color='#4a5880')
+        gridcolor='rgba(255,255,255,0.06)',
+        zerolinecolor='rgba(255,255,255,0.05)',
+        tickfont=dict(size=11, color='#b8c6e8'),  # 🔥 FIXED
+        title_font=dict(size=12, color='#dbe4ff')
     )
 )
 
@@ -533,12 +553,12 @@ def create_heatmap(df):
 
     fig.update_xaxes(
         side='bottom',
-        tickfont=dict(size=10, color='#4a5880'),
+        tickfont=dict(size=11, color='#b8c6e8'),  # 🔥 brighter
         showgrid=False
     )
 
     fig.update_yaxes(
-        tickfont=dict(size=10, color='#4a5880'),
+        tickfont=dict(size=11, color='#b8c6e8'),  # 🔥 brighter
         showgrid=False
     )
     return fig
@@ -726,29 +746,78 @@ tab1, tab2, tab3, tab4, tab5 = st.tabs([
 # TAB 1 — ANOMALY MATRIX
 # ═══════════════════════════════════════════════════════════════════════════════
 with tab1:
-    st.markdown(f'<div class="fg-section">3-Layer Anomaly Detection — {selected_service.upper()}</div>', unsafe_allow_html=True)
+    st.markdown(f'<div class="fg-section">Anomaly Intelligence — {selected_service.upper()}</div>', unsafe_allow_html=True)
+    st.markdown('<div class="fg-sub" style="margin-bottom:1rem">Ensemble detection · Confidence scoring · Model agreement</div>', unsafe_allow_html=True)
+    # ─── MODEL INTELLIGENCE STRIP (REPLACEMENT) ───
 
-    # Detection method agreement pills
-    method_cols = st.columns(4)
-    methods = [
-        ('Z-Score',          'zscore_flag',  'pill-blue'),
-        ('Isolation Forest', 'if_flag',      'pill-blue'),
-        ('LSTM Autoencoder', 'lstm_flag',    'pill-blue'),
-        ('Ensemble Final',   'final_anomaly','pill-red'),
-    ]
-    for col, (name, field, pill_cls) in zip(method_cols, methods):
-        # Try to read from service anomaly ensemble data
-        # Since dashboard reads from DB, show counts from service_df
-        if field in service_df.columns:
-            cnt = int(service_df[field].sum())
-        elif field == 'final_anomaly' and 'is_anomaly' in service_df.columns:
-            cnt = int(service_df['is_anomaly'].sum())
-        else:
-            cnt = int(anomalies_only.shape[0]) if field == 'final_anomaly' else '—'
-        col.markdown(f'<div class="metric-block"><div class="mb-label">{name}</div><div class="mb-value">{cnt}</div><div class="mb-sub">Flags raised</div></div>', unsafe_allow_html=True)
+    flags = anomalies_only.copy()
 
+    total_flags = len(flags)
+
+    if 'model_votes' in flags.columns:
+        avg_votes = round(flags['model_votes'].mean(), 2)
+        strong = int((flags['model_votes'] >= 3).sum())
+        weak = int((flags['model_votes'] < 3).sum())
+    else:
+        avg_votes, strong, weak = '-', '-', '-'
+
+    m1, m2, m3, m4 = st.columns(4)
+
+    m1.markdown(f'''
+    <div class="metric-block">
+    <div class="mb-label">Total Flags</div>
+    <div class="mb-value">{total_flags}</div>
+    <div class="mb-sub">Detected anomalies</div>
+    </div>
+    ''', unsafe_allow_html=True)
+
+    m2.markdown(f'''
+    <div class="metric-block">
+    <div class="mb-label">Avg Model Agreement</div>
+    <div class="mb-value">{avg_votes}</div>
+    <div class="mb-sub">Votes per anomaly</div>
+    </div>
+    ''', unsafe_allow_html=True)
+
+    m3.markdown(f'''
+    <div class="metric-block">
+    <div class="mb-label">High Confidence</div>
+    <div class="mb-value">{strong}</div>
+    <div class="mb-sub">≥ 3 models agreed</div>
+    </div>
+    ''', unsafe_allow_html=True)
+
+    m4.markdown(f'''
+    <div class="metric-block">
+    <div class="mb-label">Low Confidence</div>
+    <div class="mb-value">{weak}</div>
+    <div class="mb-sub">1–2 model signals</div>
+    </div>
+    ''', unsafe_allow_html=True)
     st.markdown("<br>", unsafe_allow_html=True)
+    # ─── MODEL CONTRIBUTION BAR ───
 
+    z_cnt = int(service_df['zscore_flag'].sum()) if 'zscore_flag' in service_df.columns else 0
+    if_cnt = int(service_df['if_flag'].sum()) if 'if_flag' in service_df.columns else 0
+    lstm_cnt = int(service_df['lstm_flag'].sum()) if 'lstm_flag' in service_df.columns else 0
+    final_cnt = int(service_df['is_anomaly'].sum())
+
+    fig_models = go.Figure(go.Bar(
+        x=['Z-Score', 'Isolation Forest', 'LSTM', 'Final'],
+        y=[z_cnt, if_cnt, lstm_cnt, final_cnt],
+        marker=dict(
+            color=['#3a6bff', '#b06fff', '#10b981', '#ff3b5c']
+        )
+    ))
+
+    fig_models.update_layout(
+        **PLOTLY_BASE,
+        height=220,
+        showlegend=False,
+        title=dict(text='Model Contribution Breakdown', font=dict(size=13, color='#7080a0'))
+    )
+
+    st.plotly_chart(fig_models, use_container_width=True)
     # Main chart 70% | Donut 30%
     chart_col, donut_col = st.columns([7, 3])
 
