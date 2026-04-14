@@ -9,6 +9,10 @@ import numpy as np
 import plotly.graph_objects as go
 import streamlit as st
 
+# ─── APP STATE ────────────────────────────────────────────────────────────────
+if "page" not in st.session_state:
+    st.session_state.page = "landing"
+
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from db.database import FinOpsDatabase
 
@@ -625,17 +629,69 @@ def create_forecast_chart(hist_df, forecast_df, budget_threshold):
         title=dict(text='90-Day Spend Forecast with Confidence Interval', font=dict(size=13, color='#7080a0')),
     )
     return fig
+ # ─── LANDING PAGE ────────────────────────────────────────────────────────────────
+if st.session_state.page == "landing":
+
+    st.markdown("""
+    <div style="height:60vh;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;">
+        
+        <div style="
+            font-family: Montserrat;
+            font-size: clamp(40px,6vw,72px);
+            font-weight: 300;
+            letter-spacing: -2px;
+            background: linear-gradient(120deg,#e8eeff,#7ba4ff,#b06fff);
+            -webkit-background-clip:text;
+            -webkit-text-fill-color:transparent;
+            margin-bottom: 10px;
+        ">
+            FinOps Guardian
+        </div>
+
+        <div style="
+            font-family: Inter;
+            font-size:16px;
+            color:#9fb0d4;
+            max-width:700px;
+            line-height:1.6;
+            margin-bottom:30px;
+        ">
+            AI-powered multi-cloud cost intelligence platform.<br>
+            Detect anomalies. Predict spend. Optimize continuously.
+        </div>
+
+        <div style="
+            width:120px;
+            height:1px;
+            background:linear-gradient(90deg,transparent,#7ba4ff,transparent);
+            margin-bottom:30px;
+        "></div>
+
+    </div>
+    """, unsafe_allow_html=True)
+
+    col1, col2, col3 = st.columns([2,1,2])
+
+    with col2:
+        if st.button("Enter Dashboard →", use_container_width=True):
+            st.session_state.page = "dashboard"
+            st.rerun()
+
+    st.stop()
+
 # ─── HEADER ──────────────────────────────────────────────────────────────────────
 col_title, col_ts = st.columns([5, 2])
 
 with col_title:
-    st.markdown('<div class="fg-hero">FinOps Guardian</div>', unsafe_allow_html=True)
-    st.markdown('<div class="fg-sub">AI-Powered Multi-Cloud Cost Anomaly Detection &amp; Spend Forecasting &nbsp;|&nbsp; Team Catalyst Core</div>', unsafe_allow_html=True)
+    st.markdown('<div class="fg-hero" style="text-align:center;">FinOps Guardian</div>', unsafe_allow_html=True)
+    st.markdown('<div class="fg-sub" style="text-align:center;">AI-Powered Multi-Cloud Cost Intelligence Platform</div>', unsafe_allow_html=True)
 
 with col_ts:
-    st.markdown(f'<div class="fg-mono" style="text-align:right;padding-top:8px">Last updated<br>{pd.Timestamp.now().strftime("%Y-%m-%d %H:%M")} UTC</div>', unsafe_allow_html=True)
+    st.markdown(f'<div class="fg-mono" style="text-align:right;padding-top:12px;opacity:0.7">LIVE · {pd.Timestamp.now().strftime("%H:%M UTC")}</div>', unsafe_allow_html=True)
 
 st.markdown("<br>", unsafe_allow_html=True)
+if st.session_state.page != "dashboard":
+    st.stop()
 with st.spinner("Loading FinOps Intelligence..."):
     anomalies_df, forecasts_df = load_data()
     metrics_df = load_metrics()
@@ -772,7 +828,7 @@ st.markdown(f"""
     <div class="kpi-delta">Last 180 days · all providers</div>
   </div>
   <div class="kpi-card kpi-red">
-    <div class="kpi-label">P0 + P1 Critical</div>
+    <div class="kpi-label">level P0 + P1 Critical</div>
     <div class="kpi-value">{p0_p1_count:,}</div>
     <div class="kpi-delta">Requires immediate action</div>
   </div>

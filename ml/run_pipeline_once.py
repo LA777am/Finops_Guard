@@ -131,7 +131,7 @@ for service, result in results.items():
         "priority"
     ]].head(5))
 
-    anomaly_only_df = anomalies_df.copy()
+    anomaly_only_df = anomalies_df[anomalies_df["is_anomaly"] == 1].copy()
 
     inserted = db.insert_anomalies(anomaly_only_df)
     total_inserted += inserted

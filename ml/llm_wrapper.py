@@ -4,7 +4,7 @@ def enrich_with_llm(data):
     service = data.get("service", "unknown").lower()
     team = data.get("team", "unknown")
 
-    # -------- BASE CLASSIFICATION --------
+
     if severity == "high":
         level = "critical"
     elif severity == "medium":
@@ -12,7 +12,7 @@ def enrich_with_llm(data):
     else:
         level = "low"
 
-    # -------- SERVICE-AWARE ROOT CAUSE --------
+
     if service == "compute":
         root = "Possible over-provisioned instances or autoscaling misconfiguration"
         action = "Check EC2/VM scaling policies and terminate idle instances"
@@ -33,7 +33,6 @@ def enrich_with_llm(data):
         root = "General anomaly in cloud usage pattern"
         action = "Investigate recent deployments and logs"
 
-    # -------- COST-BASED INTELLIGENCE --------
     if cost > 4000:
         impact = "very high"
         savings = "$2000-$7000"
@@ -54,7 +53,7 @@ def enrich_with_llm(data):
         savings = "$50-$300"
         insight = f"Minor anomaly — within acceptable variation"
 
-    # -------- FINAL OUTPUT --------
+
     return {
         "insight": insight,
         "root_cause": f"{root} (Team: {team})",

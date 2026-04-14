@@ -93,7 +93,7 @@ class FinOpsDatabase:
                 model_votes INTEGER,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 impact_score DOUBLE PRECISION,
-                priority VARCHAR(20),
+                priority VARCHAR(20)
             )
             """,
             

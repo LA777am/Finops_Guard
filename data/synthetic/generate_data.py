@@ -7,7 +7,7 @@ import os
 
 fake = Faker()
 
-def generate_cloud_billing_data(days=180, services=None):
+def generate_cloud_billing_data(days=365, services=None):
     if services is None:
         services = ['compute', 'storage', 'networking', 'managed_services']
     
@@ -26,17 +26,46 @@ def generate_cloud_billing_data(days=180, services=None):
                 for team in teams:
                     # Base cost with trend and seasonality
                     base_cost = random.uniform(100, 1000)
-                    trend = day * random.uniform(0.1, 0.5)
-                    seasonality = 50 * np.sin(2 * np.pi * day / 7)  # weekly pattern
+
+                    # Long-term trend (growth)
+                    trend = day * 0.2 + (day // 180) * 50
+
+                    # Weekly seasonality
+                    weekly = 50 * np.sin(2 * np.pi * day / 7)
+
+                    # Monthly seasonality
+                    monthly = 100 * np.sin(2 * np.pi * day / 30)
+
+                    # Noise
                     noise = random.gauss(0, 20)
-                    cost = base_cost + trend + seasonality + noise
+
+                    cost = base_cost + trend + weekly + monthly + noise
+                    if service == "compute":
+                        cost *= random.uniform(1.2, 1.8)
+                    elif service == "storage":
+                        cost *= random.uniform(0.8, 1.2)
+                    elif service == "networking":
+                        cost *= random.uniform(0.9, 1.3)
                     
-                    # Inject anomalies at specific points
-                    if day in [45, 90, 120, 150]:  # sudden spikes
-                        cost *= random.uniform(3, 5)
-                    if 60 <= day <= 75:  # gradual drift
-                        cost *= (1 + (day - 60) * 0.05)
+                    # Weekend effect (lower usage)
+                    if current_date.weekday() >= 5:  # Saturday, Sunday
+                        cost *= 0.7
+                    is_anomaly = 0
+
+                    # Random spikes
+                    if random.random() < 0.02:
+                        cost *= random.uniform(3, 6)
+                        is_anomaly = 1
+
+                    # Gradual drift anomaly
+                    if random.random() < 0.01:
+                        cost *= (1 + random.uniform(0.5, 1.5))
+                        is_anomaly = 1
                     
+                    # Rare catastrophic anomaly (0.3%)
+                    if random.random() < 0.003:
+                        cost *= random.uniform(8, 15)
+                        is_anomaly = 1
                     records.append({
                         'date': current_date,
                         'provider': provider,
@@ -48,7 +77,7 @@ def generate_cloud_billing_data(days=180, services=None):
                         'usage_quantity': random.uniform(1, 1000),
                         'usage_unit': 'hours' if service == 'compute' else 'GB',
                         'region': random.choice(['us-east-1', 'eu-west-1', 'ap-south-1']),
-                        'is_anomaly': 1 if (day in [45, 90, 120, 150] or 60 <= day <= 75) else 0
+                        'is_anomaly': is_anomaly
                     })
     
     df = pd.DataFrame(records)
