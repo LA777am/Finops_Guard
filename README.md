@@ -1,20 +1,22 @@
 <div align="center">
-  # 🛡️ FinOps Guard
+  <h1>FinOps Guard</h1>
   
-  ### Autonomous Cloud Cost Intelligence & Remediation Engine
+  <p><strong>Autonomous Cloud Cost Intelligence & Remediation Engine</strong></p>
   
-  [![License](https://img.shields.io/badge/License-MIT-34d399?style=flat-square)](https://opensource.org/licenses/MIT)
-  [![Python](https://img.shields.io/badge/Python-3.10%2B-10b981?style=flat-square)](https://www.python.org/)
-  [![Streamlit](https://img.shields.io/badge/Streamlit-1.56.0-00d47e?style=flat-square)](https://streamlit.io/)
-  [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-Neon-34d399?style=flat-square)](https://neon.tech/)
-  [![Status](https://img.shields.io/badge/Status-Stable-10b981?style=flat-square)](https://github.com/)
+  <p>
+    <a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/License-MIT-34d399?style=flat-square" alt="License"/></a>
+    <a href="https://www.python.org/"><img src="https://img.shields.io/badge/Python-3.10%2B-10b981?style=flat-square" alt="Python"/></a>
+    <a href="https://streamlit.io/"><img src="https://img.shields.io/badge/Streamlit-1.56.0-00d47e?style=flat-square" alt="Streamlit"/></a>
+    <a href="https://neon.tech/"><img src="https://img.shields.io/badge/PostgreSQL-Neon-34d399?style=flat-square" alt="PostgreSQL"/></a>
+    <a href="https://github.com/"><img src="https://img.shields.io/badge/Status-Stable-10b981?style=flat-square" alt="Status"/></a>
+  </p>
 
-  *Transforming raw multi-cloud billing telemetry into predictive, explainable financial decisions.*
+  <p><em>Transforming raw multi-cloud billing telemetry into predictive, explainable financial decisions.</em></p>
 </div>
 
 ---
 
-## ⚡ Beyond Observability: A Decision Intelligence System
+## ◆ Beyond Observability: A Decision Intelligence System
 
 Modern cloud environments suffer from uncontrolled resource sprawl, delayed detection of billing anomalies, and weak forecasting. Traditional observability platforms tell you *what* happened days after the invoice is cut.
 
@@ -22,7 +24,7 @@ Modern cloud environments suffer from uncontrolled resource sprawl, delayed dete
 
 ---
 
-## 📊 System Architecture & Execution Sequence
+## ◆ System Architecture & Execution Sequence
 
 To initialize the platform and generate the final executive spend analytics dashboard, execute the following components in sequence:
 
@@ -38,7 +40,7 @@ graph TD
     style D fill:#0f172a,stroke:#34d399,stroke-width:2px,color:#ffffff
 ```
 
-### 🚀 Execution Steps
+### ◇ Execution Steps
 
 #### Step 1: Environment Configuration
 Define your Neon PostgreSQL database credentials inside a `.env` file in the project root:
@@ -69,7 +71,7 @@ streamlit run dashboard/app.py
 
 ---
 
-## 🧬 Core Intelligence Capabilities
+## ◆ Core Intelligence Capabilities
 
 ### 1. Multi-Cloud Unification Taxonomy
 Ingests and normalizes unstructured billing data from **AWS, Azure, and GCP** into a standardized telemetry format. Expenditures are categorized into `Compute`, `Storage`, `Networking`, and `Managed Services` to allow seamless cross-provider correlation.
@@ -118,7 +120,7 @@ Constantly maps the 90-day probability distributions against active monthly budg
 
 ---
 
-## ✨ Premium Redesigned Dark UI / UX
+## ◆ Premium Redesigned Dark UI / UX
 
 FinOps Guard has been redesigned from the ground up to feature an ultra-slick, minimal **Sage Emerald & Charcoal Carbon** executive theme.
 
@@ -131,7 +133,7 @@ FinOps Guard has been redesigned from the ground up to feature an ultra-slick, m
 
 ---
 
-## 🎯 Design Philosophy
+## ◆ Design Philosophy
 
 1.  **Ensemble > Single Model:** Combining methodologies prevents adversarial system noise from disrupting alerts.
 2.  **Explainability > Black Box:** AI has no value without attribution. We enforce SHAP and Linguistic derivations.
