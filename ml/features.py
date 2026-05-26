@@ -7,20 +7,20 @@ def engineer_features(df, cost_col='total_cost', date_col='date'):
     """Create all ML features from time series data with safety nets"""
     df = df.copy().sort_values(date_col)
     
-    # Lag features — previous day/week costs
-    df['cost_lag_1'] = df[cost_col].shift(1)
-    df['cost_lag_7'] = df[cost_col].shift(7)
-    df['cost_lag_30'] = df[cost_col].shift(30)
+    # Lag features — previous day/week costs (grouped by provider/team/environment)
+    df['cost_lag_1'] = df.groupby(['provider', 'team', 'environment'])[cost_col].shift(1)
+    df['cost_lag_7'] = df.groupby(['provider', 'team', 'environment'])[cost_col].shift(7)
+    df['cost_lag_30'] = df.groupby(['provider', 'team', 'environment'])[cost_col].shift(30)
     
-    # Rolling statistics
-    df['rolling_mean_7'] = df[cost_col].rolling(7).mean()
-    df['rolling_std_7'] = df[cost_col].rolling(7).std()
-    df['rolling_mean_30'] = df[cost_col].rolling(30).mean()
-    df['rolling_std_30'] = df[cost_col].rolling(30).std()
+    # Rolling statistics (grouped by provider/team/environment)
+    df['rolling_mean_7'] = df.groupby(['provider', 'team', 'environment'])[cost_col].transform(lambda x: x.rolling(7, min_periods=1).mean())
+    df['rolling_std_7'] = df.groupby(['provider', 'team', 'environment'])[cost_col].transform(lambda x: x.rolling(7, min_periods=1).std())
+    df['rolling_mean_30'] = df.groupby(['provider', 'team', 'environment'])[cost_col].transform(lambda x: x.rolling(30, min_periods=1).mean())
+    df['rolling_std_30'] = df.groupby(['provider', 'team', 'environment'])[cost_col].transform(lambda x: x.rolling(30, min_periods=1).std())
     
-    # Cost change features
-    df['cost_change_1d'] = df[cost_col].pct_change(1)
-    df['cost_change_7d'] = df[cost_col].pct_change(7)
+    # Cost change features (grouped by provider/team/environment)
+    df['cost_change_1d'] = df.groupby(['provider', 'team', 'environment'])[cost_col].pct_change(1)
+    df['cost_change_7d'] = df.groupby(['provider', 'team', 'environment'])[cost_col].pct_change(7)
     
     # Z-score feature
     df['zscore'] = np.abs(stats.zscore(df[cost_col].fillna(0)))

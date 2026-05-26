@@ -14,12 +14,18 @@ from ml.forecasting.forecast import (train_prophet_model, prophet_forecast,
 from ml.normalize import normalize_billing_data, aggregate_daily
 from ml.features import engineer_features
 from ml.llm_wrapper import enrich_with_llm
-def run_full_pipeline(raw_df, budget_threshold=50000):
-    print("Step 1: Normalizing data...")
+def run_full_pipeline(raw_df, budget_threshold=50000, progress_callback=None):
+    if progress_callback:
+        progress_callback("Stage 1: Normalizing billing telemetry...")
+    else:
+        print("Step 1: Normalizing data...")
     normalized_df = normalize_billing_data(raw_df)
     daily_df = aggregate_daily(normalized_df)
     
-    print("Step 2: Engineering features...")
+    if progress_callback:
+        progress_callback("Stage 2: Performing dimensional lag engineering...")
+    else:
+        print("Step 2: Engineering features...")
     results = {}
     
     for service in daily_df['service_category'].unique():
@@ -28,10 +34,16 @@ def run_full_pipeline(raw_df, budget_threshold=50000):
             service_df = engineer_features(service_df, cost_col='total_cost')
             
             if len(service_df) < 30:
-                print(f"  Skipped {service}: too few records after lags")
+                if progress_callback:
+                    progress_callback(f"  Skipped {service.upper()}: insufficient training data")
+                else:
+                    print(f"  Skipped {service}: too few records after lags")
                 continue
             
-            print(f"  Processing: {service}")
+            if progress_callback:
+                progress_callback(f"Stage 3: Running 3-Layer Ensemble on {service.upper()}...")
+            else:
+                print(f"  Processing: {service}")
             
             # ANOMALY DETECTION (3 layers)
             zscore_results = zscore_anomaly_detection(service_df['total_cost'])
@@ -100,6 +112,8 @@ def run_full_pipeline(raw_df, budget_threshold=50000):
                 # ====================================================================
                         
             # ROOT CAUSE + FORECASTING
+            if progress_callback:
+                progress_callback(f"Stage 4: Running SHAP Attribution & Prophet Forecast on {service.upper()}...")
             rf_model, X_features = train_attribution_model(service_df)
             anomaly_indices = ensemble_results[ensemble_results['final_anomaly'] == 1].index.tolist()
             attributions = get_shap_attribution(rf_model, X_features, anomaly_indices[:10])
@@ -130,6 +144,8 @@ def run_full_pipeline(raw_df, budget_threshold=50000):
             continue  # Safety net
     
     # Safe correlation detection
+    if progress_callback:
+        progress_callback("Stage 5: Detecting cross-service correlation patterns...")
     safe_daily_df = daily_df.reset_index() if 'service_category' not in daily_df.columns else daily_df
     correlated = detect_correlated_anomalies(safe_daily_df)
     

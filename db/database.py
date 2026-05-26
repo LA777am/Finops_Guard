@@ -14,6 +14,9 @@ from psycopg2 import pool
 from psycopg2.extras import execute_values, RealDictCursor
 from psycopg2 import sql
 
+from dotenv import load_dotenv
+load_dotenv()
+
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -93,7 +96,7 @@ class FinOpsDatabase:
                 model_votes INTEGER,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 impact_score DOUBLE PRECISION,
-                priority VARCHAR(20),
+                priority VARCHAR(20)
             )
             """,
             
@@ -143,6 +146,21 @@ class FinOpsDatabase:
                     return True
         except Exception as e:
             logger.error(f"Failed to create tables: {e}")
+            return False
+            
+    def clear_all_tables(self) -> bool:
+        """
+        Truncate all tables to clear data before new analysis runs
+        """
+        try:
+            with self.get_connection() as conn:
+                with conn.cursor() as cur:
+                    cur.execute("TRUNCATE TABLE anomaly_logs, forecast_results, model_metrics RESTART IDENTITY;")
+                    conn.commit()
+                    logger.info("All telemetry tables cleared successfully")
+                    return True
+        except Exception as e:
+            logger.error(f"Failed to clear tables: {e}")
             return False
     
     def insert_anomalies(self, df: pd.DataFrame) -> int:
