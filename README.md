@@ -1,11 +1,20 @@
-# ✦ FinOps Guard
+<div align="center">
+  # 🛡️ FinOps Guard
+  
+  ### Autonomous Cloud Cost Intelligence & Remediation Engine
+  
+  [![License](https://img.shields.io/badge/License-MIT-34d399?style=flat-square)](https://opensource.org/licenses/MIT)
+  [![Python](https://img.shields.io/badge/Python-3.10%2B-10b981?style=flat-square)](https://www.python.org/)
+  [![Streamlit](https://img.shields.io/badge/Streamlit-1.56.0-00d47e?style=flat-square)](https://streamlit.io/)
+  [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-Neon-34d399?style=flat-square)](https://neon.tech/)
+  [![Status](https://img.shields.io/badge/Status-Stable-10b981?style=flat-square)](https://github.com/)
 
-### Autonomous Cloud Cost Intelligence & Remediation Engine
-*Transforming raw multi-cloud billing telemetry into predictive, explainable financial decisions.*
+  *Transforming raw multi-cloud billing telemetry into predictive, explainable financial decisions.*
+</div>
 
 ---
 
-## ✦ Beyond Observability: A Decision Intelligence System
+## ⚡ Beyond Observability: A Decision Intelligence System
 
 Modern cloud environments suffer from uncontrolled resource sprawl, delayed detection of billing anomalies, and weak forecasting. Traditional observability platforms tell you *what* happened days after the invoice is cut.
 
@@ -13,7 +22,7 @@ Modern cloud environments suffer from uncontrolled resource sprawl, delayed dete
 
 ---
 
-## ✦ System Architecture & Execution Sequence
+## 📊 System Architecture & Execution Sequence
 
 To initialize the platform and generate the final executive spend analytics dashboard, execute the following components in sequence:
 
@@ -29,7 +38,7 @@ graph TD
     style D fill:#0f172a,stroke:#34d399,stroke-width:2px,color:#ffffff
 ```
 
-### ✦ Execution Steps
+### 🚀 Execution Steps
 
 #### Step 1: Environment Configuration
 Define your Neon PostgreSQL database credentials inside a `.env` file in the project root:
@@ -60,7 +69,7 @@ streamlit run dashboard/app.py
 
 ---
 
-## ✦ Core Intelligence Capabilities
+## 🧬 Core Intelligence Capabilities
 
 ### 1. Multi-Cloud Unification Taxonomy
 Ingests and normalizes unstructured billing data from **AWS, Azure, and GCP** into a standardized telemetry format. Expenditures are categorized into `Compute`, `Storage`, `Networking`, and `Managed Services` to allow seamless cross-provider correlation.
@@ -109,7 +118,7 @@ Constantly maps the 90-day probability distributions against active monthly budg
 
 ---
 
-## ✦ Premium Redesigned Dark UI / UX
+## ✨ Premium Redesigned Dark UI / UX
 
 FinOps Guard has been redesigned from the ground up to feature an ultra-slick, minimal **Sage Emerald & Charcoal Carbon** executive theme.
 
@@ -122,7 +131,7 @@ FinOps Guard has been redesigned from the ground up to feature an ultra-slick, m
 
 ---
 
-## ✦ Design Philosophy
+## 🎯 Design Philosophy
 
 1.  **Ensemble > Single Model:** Combining methodologies prevents adversarial system noise from disrupting alerts.
 2.  **Explainability > Black Box:** AI has no value without attribution. We enforce SHAP and Linguistic derivations.
@@ -131,11 +140,9 @@ FinOps Guard has been redesigned from the ground up to feature an ultra-slick, m
 
 ---
 
-<p align="center">
-  <em>Cloud cost is not a monitoring problem. It is a decision problem. FinOps Guardian turns raw data into automated decisions.</em>
-</p>
-
-<p align="center">
-  <b>Architected by Ayush Mali</b><br>
+<div align="center">
+  <p><em>Cloud cost is not a monitoring problem. It is a decision problem. FinOps Guardian turns raw data into automated decisions.</em></p>
+  
+  <b>Architected by Ayush Mali</b>  
   <sub>Building intelligent, performant systems for high-scale enterprise operations.</sub>
-</p>
+</div>
