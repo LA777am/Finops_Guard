@@ -59,7 +59,7 @@ def run_continuous_pipeline(interval_seconds=60):
                     continue
                 
                 print("📂 Loading billing data...")
-                df = pd.read_csv(file_path)
+                df = pd.read_csv(file_path).tail(50000)
                 print(f"   Loaded {len(df)} records")
                 
                 # Run pipeline
@@ -124,13 +124,13 @@ def run_continuous_pipeline(interval_seconds=60):
                         impact = row["impact_score"]
                         severity = row["severity_score"]
                         
-                        if round(severity, 2) >= 1.0 and impact < 1500:
+                        if round(severity, 2) >= 1.0 and impact < 2000:
                             return "P1 - High"
-                        if impact > 3000:
+                        if impact > 8000:
                             return "P0 - Critical"
-                        elif impact > 1500:
+                        elif impact > 5000:
                             return "P1 - High"
-                        elif impact > 500:
+                        elif impact > 2000:
                             return "P2 - Medium"
                         else:
                             return "P3 - Low"
@@ -148,6 +148,13 @@ def run_continuous_pipeline(interval_seconds=60):
                         print(f"    ✅ Inserted {inserted} anomalies")
                     else:
                         print(f"    ℹ️  No anomalies detected")
+                        
+                    # Insert forecasts
+                    if 'forecast' in result and not result['forecast'].empty:
+                        forecast_df = result['forecast'].copy()
+                        forecast_df['service_category'] = service
+                        f_inserted = db.insert_forecasts(forecast_df)
+                        print(f"    📈 Inserted {f_inserted} forecast records")
                 
                 # Calculate execution time
                 execution_time = time.time() - start_time

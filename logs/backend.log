@@ -1,0 +1,15 @@
+INFO:     Started server process [76770]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+INFO:db.database:Database connection pool initialized successfully
+INFO:db.database:Fetched 7384 anomaly records
+INFO:     127.0.0.1:50968 - "GET /anomalies/ HTTP/1.1" 200 OK
+INFO:db.database:Fetched 360 forecast records
+INFO:     127.0.0.1:50970 - "GET /forecasts/ HTTP/1.1" 200 OK
+INFO:db.database:Fetched metrics for 4 models
+INFO:     127.0.0.1:50971 - "GET /metrics/ HTTP/1.1" 200 OK
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [76770]

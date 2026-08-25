@@ -21,7 +21,7 @@ def normalize_billing_data(df):
     else:
         df['service_category'] = 'other'
         
-    df['date'] = pd.to_datetime(df['date']).dt.normalize()
+    df['date'] = pd.to_datetime(df['date'], format='mixed').dt.normalize()
     
     # Clean money values
     df['cost_usd'] = df['cost_usd'].fillna(0).clip(lower=0)

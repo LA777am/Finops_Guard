@@ -1,0 +1,70 @@
+
+  You can now view your Streamlit app in your browser.
+
+  Local URL: http://localhost:8501
+  Network URL: http://10.144.113.20:8501
+
+  For better performance, install the Watchdog module:
+
+  $ xcode-select --install
+  $ pip install watchdog
+            
+INFO:db.database:Database connection pool initialized successfully
+INFO:db.database:All telemetry tables cleared successfully
+INFO:db.database:Successfully inserted 836 anomaly records
+INFO:db.database:Successfully inserted model metrics with ID: 1
+INFO:db.database:Successfully inserted 90 forecast records
+INFO:db.database:Successfully inserted 836 anomaly records
+INFO:db.database:Successfully inserted model metrics with ID: 2
+INFO:db.database:Successfully inserted 90 forecast records
+INFO:db.database:Successfully inserted 836 anomaly records
+INFO:db.database:Successfully inserted model metrics with ID: 3
+INFO:db.database:Successfully inserted 90 forecast records
+INFO:db.database:Successfully inserted 836 anomaly records
+INFO:db.database:Successfully inserted model metrics with ID: 4
+INFO:db.database:Successfully inserted 90 forecast records
+2026-08-26 01:50:33.843 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2026-08-26 01:50:33.863 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2026-08-26 01:50:33.882 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2026-08-26 01:50:33.942 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2026-08-26 01:50:33.967 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2026-08-26 01:50:33.982 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2026-08-26 01:50:33.996 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+  [DEBUG] Executing 40 LLM calls for compute (out of 40 total anomalies)
+  [DEBUG] Executing 44 LLM calls for managed_services (out of 44 total anomalies)
+  [DEBUG] Executing 38 LLM calls for networking (out of 38 total anomalies)
+  [DEBUG] Executing 42 LLM calls for storage (out of 42 total anomalies)
+Pipeline complete.
+Index(['zscore_flag', 'if_flag', 'lstm_flag', 'vote_count', 'model_votes',
+       'final_anomaly', 'severity_score', 'severity_label', 'llm_insight',
+       'root_cause', 'recommended_action', 'estimated_savings'],
+      dtype='str')
+  Stopping...

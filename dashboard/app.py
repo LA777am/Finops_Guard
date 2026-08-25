@@ -9,6 +9,7 @@ import pandas as pd
 import numpy as np
 import plotly.graph_objects as go
 import streamlit as st
+import requests
 
 # Force project root into path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -355,7 +356,6 @@ hr { border-color: rgba(255,255,255,0.04) !important; margin: 2rem 0 !important;
 
 # ─── UNCACHED DATA LAYER (INSTANT UPDATE DIRECT FROM DB) ────────────────────────
 def load_data_uncached():
-    db_url = os.getenv("DATABASE_URL")
     empty_anomalies = pd.DataFrame(columns=[
         'date', 'provider', 'service_category', 'team', 'cost_usd', 'is_anomaly', 
         'severity_label', 'severity_score', 'impact_score', 'priority', 'root_cause', 
@@ -363,13 +363,15 @@ def load_data_uncached():
     ])
     empty_forecasts = pd.DataFrame(columns=['date', 'service_category', 'forecast_50', 'forecast_10', 'forecast_90', 'horizon_days'])
     
-    if not db_url:
-        return empty_anomalies, empty_forecasts
-        
     try:
-        db = FinOpsDatabase(db_url)
-        anomalies_df = db.fetch_anomalies(limit=10000)
-        forecasts_df = db.fetch_forecasts(limit=5000)
+        anomalies_resp = requests.get("http://127.0.0.1:8000/anomalies/")
+        forecasts_resp = requests.get("http://127.0.0.1:8000/forecasts/")
+        
+        anomalies_data = anomalies_resp.json().get("data", []) if anomalies_resp.status_code == 200 else []
+        forecasts_data = forecasts_resp.json().get("data", []) if forecasts_resp.status_code == 200 else []
+        
+        anomalies_df = pd.DataFrame(anomalies_data)
+        forecasts_df = pd.DataFrame(forecasts_data)
         
         if not anomalies_df.empty:
             anomalies_df['date'] = pd.to_datetime(anomalies_df['date'])
@@ -382,17 +384,18 @@ def load_data_uncached():
             forecasts_df = empty_forecasts
             
         return anomalies_df, forecasts_df
-    except Exception:
+    except Exception as e:
+        print(f"Error fetching data: {e}")
         return empty_anomalies, empty_forecasts
 
 
 def load_metrics_uncached():
-    db_url = os.getenv("DATABASE_URL")
-    if not db_url:
-        return pd.DataFrame()
     try:
-        db = FinOpsDatabase(db_url)
-        return db.fetch_latest_metrics()
+        resp = requests.get("http://127.0.0.1:8000/metrics/")
+        if resp.status_code == 200:
+            data = resp.json().get("data", [])
+            return pd.DataFrame(data)
+        return pd.DataFrame()
     except Exception:
         return pd.DataFrame()
 
@@ -1110,12 +1113,11 @@ else:
 """, unsafe_allow_html=True)
 
     # ─── NAVIGATION TABS ───
-    tab1, tab2, tab3, tab4, tab5 = st.tabs([
+    tab1, tab2, tab3, tab4 = st.tabs([
         "Telemetry Matrix",
         "Explainable Causal Attribution",
         "Forecast Trajectory",
-        "Service Distribution",
-        "Model Calibration"
+        "Service Distribution"
     ])
 
     # ═══════════════════════════════════════════════════════════════════════════════
@@ -1198,7 +1200,7 @@ else:
     # ═══════════════════════════════════════════════════════════════════════════════
     with tab2:
         st.markdown('<div class="fg-header-classy" style="margin-top: 1rem;">Explainable AI Root Cause Attributions</div>', unsafe_allow_html=True)
-        st.markdown('<div class="fg-body-classy" style="margin-bottom: 2rem;">SHAP attributions mapping telemetry variance to structural root causes and estimated hard savings.</div>', unsafe_allow_html=True)
+        st.markdown('<div class="fg-body-classy" style="margin-bottom: 2rem;">AI-driven attributions mapping telemetry variance to structural root causes and estimated hard savings.</div>', unsafe_allow_html=True)
 
         if anomalies_only.empty:
             st.info("System operating normally. No cost anomalies detected in active service category.")
@@ -1222,12 +1224,17 @@ else:
                     c1, c2 = st.columns([3, 1])
 
                     with c1:
+                        action = str(row.get('recommended_action', 'Audit logs.'))
                         st.markdown(f"""
 <div class="alert-card {sev_cls}">
     <div class="alert-date">{date_str}</div>
     <div class="alert-title">{row.get('root_cause', 'Causal Analysis Pending')}</div>
     <div class="alert-body">{row.get('llm_insight', 'No explanation generated.')}</div>
-    <div style="margin-top: 10px;">
+    <div style="margin-top: 15px; padding: 10px; background: rgba(0,0,0,0.2); border-radius: 8px; border-left: 3px solid #3b82f6;">
+        <span style="color: #94a3b8; font-size: 11px; text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px;">Recommended Action</span><br>
+        <span style="color: #e2e8f0; font-size: 13px;">{action}</span>
+    </div>
+    <div style="margin-top: 15px;">
         <span class="alert-pill {pill_cls}">{sev.upper()} RISK</span>
         <span class="alert-pill pill-blue">{priority.upper()}</span>
         <span class="alert-pill pill-blue">PROVIDER: {row.get('provider', 'N/A').upper()}</span>
@@ -1237,20 +1244,15 @@ else:
 """, unsafe_allow_html=True)
 
                     with c2:
-                        action = str(row.get('recommended_action', 'Audit logs.'))
                         savings = str(row.get('estimated_savings', 'N/A'))
                         st.markdown(f"""
-<div class="metric-block" style="margin-bottom:8px;">
+<div class="metric-block" style="margin-bottom:12px; height: 45%;">
     <div class="mb-label">Exposure Score</div>
-    <div class="mb-value" style="font-size: 18px;">${impact:,.0f}</div>
+    <div class="mb-value" style="font-size: 22px;">${impact:,.0f}</div>
 </div>
-<div class="metric-block" style="margin-bottom:8px;">
+<div class="metric-block" style="height: 45%;">
     <div class="mb-label">Remediation Benefit</div>
-    <div class="mb-value" style="font-size: 16px; color:#86efac;">{savings}</div>
-</div>
-<div class="metric-block">
-    <div class="mb-label">Remediation Action</div>
-    <div class="mb-value" style="font-size: 11px; font-family:'Inter'; color:#94a3b8; font-weight:300;">{action}</div>
+    <div class="mb-value" style="font-size: 18px; color:#86efac;">{savings}</div>
 </div>
 """, unsafe_allow_html=True)
 
@@ -1335,9 +1337,13 @@ else:
         if not filtered_df.empty:
             prov_agg = filtered_df.groupby('provider').agg(
                 total_cost=('cost_usd', 'sum'),
-                anomaly_count=('is_anomaly', 'sum'),
-                avg_daily=('cost_usd', 'mean')
+                anomaly_count=('is_anomaly', 'sum')
             ).reset_index()
+
+            # Calculate true daily average per provider
+            daily_prov = filtered_df.groupby(['provider', 'date'])['cost_usd'].sum().reset_index()
+            daily_avg = daily_prov.groupby('provider')['cost_usd'].mean().reset_index().rename(columns={'cost_usd': 'avg_daily'})
+            prov_agg = prov_agg.merge(daily_avg, on='provider')
 
             prov_cols = st.columns(len(prov_agg))
             colors = ['#10b981', '#34d399', '#059669']
@@ -1347,48 +1353,6 @@ else:
                 <div class="kpi-card" style="border-top: 2px solid {c}; padding: 18px 20px;">
                     <div class="kpi-label">{row['provider']}</div>
                     <div class="kpi-value" style="font-size:24px;">${row['total_cost']:,.0f}</div>
-                    <div class="kpi-delta">{int(row['anomaly_count'])} signals &bull; ${row['avg_daily']:,.0f}/day average</div>
+                    <div class="kpi-delta">{int(row['anomaly_count'])} anomalies &bull; ${row['avg_daily']:,.0f}/day average</div>
                 </div>
                 """, unsafe_allow_html=True)
-
-    # ═══════════════════════════════════════════════════════════════════════════════
-    # TAB 5 — MODEL CALIBRATION
-    # ═══════════════════════════════════════════════════════════════════════════════
-    with tab5:
-        st.markdown('<div class="fg-header-classy" style="margin-top: 1rem;">Machine Learning Model Calibration &amp; Performance</div>', unsafe_allow_html=True)
-        st.markdown('<div class="fg-body-classy" style="margin-bottom: 2rem;">F1-Score, Precision, and Recall parameters evaluated on standard test datasets.</div>', unsafe_allow_html=True)
-
-        if not metrics_df.empty:
-            for _, row in metrics_df.iterrows():
-                svc_name = str(row.get('model_name', 'unknown')).replace('_lightgbm', '')
-                f1 = float(row.get('f1_score', 0))
-                prec = float(row.get('precision_score', 0))
-                rec = float(row.get('recall_score', 0))
-                mape = float(row.get('mape', 0))
-
-                st.markdown(f'<div style="font-family:\'Montserrat\'; font-size:12px; color:#f8fafc; font-weight:400; text-transform:uppercase; margin-bottom:8px;">{svc_name} models</div>', unsafe_allow_html=True)
-                mc1, mc2, mc3, mc4 = st.columns(4)
-                
-                f1_color = "#10b981" if f1 > 0.8 else "#f59e0b"
-                mc1.markdown(f'<div class="metric-block"><div class="mb-label">F1-Score</div><div class="mb-value" style="color:{f1_color};">{f1:.3f}</div><div class="mb-sub">Combined evaluation parameter</div></div>', unsafe_allow_html=True)
-                mc2.markdown(f'<div class="metric-block"><div class="mb-label">Precision</div><div class="mb-value">{prec:.3f}</div><div class="mb-sub">Accuracy of anomaly signals</div></div>', unsafe_allow_html=True)
-                mc3.markdown(f'<div class="metric-block"><div class="mb-label">Recall</div><div class="mb-value">{rec:.3f}</div><div class="mb-sub">Incident capture rate</div></div>', unsafe_allow_html=True)
-                
-                mape_color = "#10b981" if mape < 0.15 else "#f59e0b"
-                mc4.markdown(f'<div class="metric-block"><div class="mb-label">MAPE</div><div class="mb-value" style="color:{mape_color};">{mape*100:.1f}%</div><div class="mb-sub">Mean Absolute Percentage Error</div></div>', unsafe_allow_html=True)
-                st.markdown("<div style='height: 1rem;'></div>", unsafe_allow_html=True)
-        else:
-            st.info("Run model pipeline to generate calibration logs.")
-
-        st.markdown("<hr>", unsafe_allow_html=True)
-        
-        # Download Data button
-        if not anomalies_only.empty:
-            csv = anomalies_only.to_csv(index=False)
-            st.download_button(
-                label="Export Incidents Telemetry (CSV)",
-                data=csv,
-                file_name=f"finops_guard_{selected_service}_incidents.csv",
-                mime="text/csv",
-                use_container_width=True
-            )

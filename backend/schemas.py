@@ -18,6 +18,8 @@ class Anomaly(BaseModel):
     recommended_action: Optional[str]
     estimated_savings: Optional[str]
     model_votes: Optional[int]
+    impact_score: Optional[float]
+    priority: Optional[str]
 
 
 class AnomalyResponse(BaseModel):

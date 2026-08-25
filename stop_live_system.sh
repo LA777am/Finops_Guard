@@ -12,17 +12,19 @@ echo ""
 
 # Stop data stream
 echo "🔴 Stopping data stream generator..."
-pkill -f "generate_live_stream.py"
-sleep 1
+pkill -f "generate_live_stream.py" 2>/dev/null
 
 # Stop ML pipeline
 echo "🧠 Stopping ML pipeline..."
-pkill -f "run_pipeline_continuous.py"
-sleep 1
+pkill -f "run_pipeline_continuous.py" 2>/dev/null
+
+# Stop backend
+echo "⚡ Stopping FastAPI Backend..."
+pkill -f "uvicorn backend.main:app" 2>/dev/null
 
 # Stop dashboard
 echo "📊 Stopping dashboard..."
-pkill -f "streamlit run dashboard/app.py"
+pkill -f "streamlit run dashboard/app.py" 2>/dev/null
 sleep 1
 
 echo ""

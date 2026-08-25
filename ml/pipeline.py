@@ -74,16 +74,16 @@ def run_full_pipeline(raw_df, budget_threshold=50000, progress_callback=None):
             ensemble_results["recommended_action"] = "None"
             ensemble_results["estimated_savings"] = "$0"
             
-            non_empty_anomalies = len(anomaly_rows)
-            print(f"  [DEBUG] Executing {non_empty_anomalies} LLM calls for {service}")
+            # Select the top 50 most impactful anomalies for LLM processing to perfectly align with the UI sorting
+            anomaly_rows['temp_impact'] = anomaly_rows['total_cost'] * ensemble_results.loc[anomaly_indices, 'severity_score']
+            sorted_anomalies = anomaly_rows.sort_values(by='temp_impact', ascending=False)
+            recent_anomaly_indices = sorted_anomalies.head(50).index
+            
+            non_empty_anomalies = len(recent_anomaly_indices)
+            print(f"  [DEBUG] Executing {non_empty_anomalies} LLM calls for {service} (out of {len(anomaly_indices)} total anomalies)")
             
             if non_empty_anomalies > 0:
-                llm_insights = []
-                root_causes = []
-                actions = []
-                savings = []
-
-                for idx in anomaly_rows.index:
+                for idx in recent_anomaly_indices:
                     try:
                         llm_output = enrich_with_llm({
                             "cost": float(anomaly_rows.loc[idx, 'total_cost']),
@@ -91,25 +91,17 @@ def run_full_pipeline(raw_df, budget_threshold=50000, progress_callback=None):
                             "service": service,
                             "team": anomaly_rows.loc[idx].get("team", "unknown")
                         })
-                    
-                        llm_insights.append(llm_output.get("insight", "Normal behavior"))
-                        root_causes.append(llm_output.get("root_cause", "None"))
-                        actions.append(llm_output.get("action", "None"))
-                        savings.append(llm_output.get("savings", "$0"))
+                        
+                        ensemble_results.loc[idx, "llm_insight"] = llm_output.get("insight", "Normal behavior")
+                        ensemble_results.loc[idx, "root_cause"] = llm_output.get("root_cause", "None")
+                        ensemble_results.loc[idx, "recommended_action"] = llm_output.get("action", "None")
+                        ensemble_results.loc[idx, "estimated_savings"] = llm_output.get("savings", "$0")
                         
                     except Exception as e:
-                        llm_insights.append("No insight")
-                        root_causes.append("Unknown")
-                        actions.append("Investigate manually")
-                        savings.append("N/A")
-
-                # Attach back to ensemble_results safely using the mask
-                ensemble_results.loc[anomaly_mask, "llm_insight"] = llm_insights
-                ensemble_results.loc[anomaly_mask, "root_cause"] = root_causes
-                ensemble_results.loc[anomaly_mask, "recommended_action"] = actions
-                ensemble_results.loc[anomaly_mask, "estimated_savings"] = savings
-
-                # ====================================================================
+                        ensemble_results.loc[idx, "llm_insight"] = "No insight"
+                        ensemble_results.loc[idx, "root_cause"] = "Unknown"
+                        ensemble_results.loc[idx, "recommended_action"] = "Investigate manually"
+                        ensemble_results.loc[idx, "estimated_savings"] = "N/A"
                         
             # ROOT CAUSE + FORECASTING
             if progress_callback:

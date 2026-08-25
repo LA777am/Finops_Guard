@@ -7,14 +7,14 @@ def df_to_json(df):
 def get_anomalies(service=None, provider=None):
     from backend.core.db import get_db
     db = get_db()
-    df = db.fetch_anomalies(service=service, provider=provider, limit=5000)
+    df = db.fetch_anomalies(service=service, provider=provider, limit=50000)
     return df_to_json(df)
 
 
 def get_forecasts(service=None):
     from backend.core.db import get_db
     db = get_db()
-    df = db.fetch_forecasts(service=service, limit=5000)
+    df = db.fetch_forecasts(service=service, limit=50000)
     return df_to_json(df)
 
 

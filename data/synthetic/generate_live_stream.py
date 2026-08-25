@@ -95,11 +95,18 @@ def stream_live_data(interval_seconds=60, output_file='data/synthetic/billing_da
     iteration = 0
     
     try:
+        last_df = pd.read_csv(output_file)
+        last_date = pd.to_datetime(last_df['date'], format='mixed').max()
+    except Exception:
+        last_date = pd.Timestamp('2025-06-30')
+    
+    try:
         while True:
             iteration += 1
-            current_time = datetime.now()
+            # Advance simulated time by 1 day per iteration to seamlessly continue the graph
+            current_time = last_date + timedelta(days=iteration)
             
-            print(f"[{current_time.strftime('%H:%M:%S')}] Iteration #{iteration} - Generating data...")
+            print(f"[{datetime.now().strftime('%H:%M:%S')}] Iteration #{iteration} - Generating data for {current_time.strftime('%Y-%m-%d')}...")
             
             # Generate new records
             df = generate_live_record(current_time)
